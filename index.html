@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Search</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 10px 10px 10px 35px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .sku {
+            font-family: monospace;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Inventory Search</h1>
+        <div class="search-container">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="searchInput" placeholder="Search by item name, SKU, or category...">
+        </div>
+        <table id="inventoryTable">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>SKU</th>
+                    <th>UoM</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryBody">
+            </tbody>
+        </table>
+        <div id="noResults" class="no-results" style="display: none;">
+            No items found
+        </div>
+    </div>
+
+    <script>
+        const inventory = [
+            { name: 'Spiral Duct', sku: 'MJ001', uom: 'FT', category: 'METAL JACKET' },
+            { name: '90° Round Elbow', sku: 'ME001', uom: 'PC', category: 'METAL ELBOW' },
+            { name: 'Stainless Band', sku: 'MB001', uom: 'RL', category: 'METAL BANDING' },
+            { name: 'Weld Pins', sku: 'PIN001', uom: 'BX', category: 'PINS' },
+            { name: 'Acoustic Liner', sku: 'DL001', uom: 'SF', category: 'DUCT LINER' },
+            { name: 'FSK Wrap', sku: 'DW001', uom: 'RL', category: 'DUCT WRAP' },
+            { name: 'Fire Caulk', sku: 'FS001', uom: 'TB', category: 'FIRESTOP' }
+        ];
+
+        const searchInput = document.getElementById('searchInput');
+        const inventoryBody = document.getElementById('inventoryBody');
+        const noResults = document.getElementById('noResults');
+
+        function filterInventory(searchTerm) {
+            const term = searchTerm.toLowerCase();
+            return inventory.filter(item => 
+                item.name.toLowerCase().includes(term) ||
+                item.sku.toLowerCase().includes(term) ||
+                item.category.toLowerCase().includes(term)
+            );
+        }
+
+        function displayInventory(items) {
+            inventoryBody.innerHTML = '';
+            
+            if (items.length === 0) {
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            
+            items.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td class="sku">${item.sku}</td>
+                    <td>${item.uom}</td>
+                    <td>${item.category}</td>
+                `;
+                inventoryBody.appendChild(row);
+            });
+        }
+
+        // Initial display
+        displayInventory(inventory);
+
+        // Search functionality
+        searchInput.addEventListener('input', (e) => {
+            const filteredItems = filterInventory(e.target.value);
+            displayInventory(filteredItems);
+        });
+    </script>
+</body>
+</html>
